@@ -1,0 +1,40 @@
+name: Crypto Market Tracker
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+# Required to allow GitHub Actions to commit files back to your repository
+permissions:
+  contents: write
+
+jobs:
+  track-prices:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run script
+        run: python main.py
+
+      - name: Commit and push updated CSV
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/prices.csv
+          # Only commit if changes exist in data/prices.csv
+          git diff --staged --quiet || (git commit -m "chmod/update: append market price data [skip ci]" && git push)
