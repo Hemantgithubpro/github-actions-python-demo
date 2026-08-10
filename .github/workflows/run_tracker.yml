@@ -2,7 +2,7 @@ name: Crypto Market Tracker
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 # Required to allow GitHub Actions to commit files back to your repository
